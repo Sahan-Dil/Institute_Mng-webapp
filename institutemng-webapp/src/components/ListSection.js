@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 const ListSection = ({ title, data }) => {
+  console.log(">>>>>>>>>>>>>>>><<<<<<<<<<<<<",data);
   const [isOpen, setIsOpen] = useState(true);
 
   useEffect(() => {
@@ -45,7 +46,7 @@ const ListSection = ({ title, data }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((item, index) => (
+            {data?.map((item, index) => (
               <TableRow key={index}>
                 {Object.values(item).map((value, index) => (
                   index !== 0 && <TableCell key={index}>{value}</TableCell>

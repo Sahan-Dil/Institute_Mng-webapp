@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import FormSection from "../components/FormSection";
-import ListSection from '../components/ListSection';
+import ListSection from "../components/ListSection";
 
 const StudentPage = () => {
   const studentFields = [
@@ -30,36 +30,87 @@ const StudentPage = () => {
     },
     // Add more fields as needed
   ];
+  const [gclassrooms, setClassrooms] = useState([]);
+  const [students, setStudents] = useState([]);
 
-  const classrooms = [
-    { id: 1, name: "Classroom 1" },
-    { id: 2, name: "Classroom 2" },
-    { id: 3, name: "Classroom 3" },
-    // Add more classrooms as needed
-  ];
-  const data = [
-    {
-      ID: '1',
-      firstName: 'John',
-      lastName: 'Doe',
-      contactPerson: 'Jane Doe',
-      contactNo: '1234567890',
-      email: 'john.doe@example.com',
-      classroom: 'Classroom 1',
-      dob: '1990-01-01',
-      age: 33,
-    },
-    // Add more student records as needed
-  ];
+  useEffect(() => {
+    fetchClassrooms();
+    fetchStudents();
+  }, []);
+
+  const fetchClassrooms = async () => {
+    try {
+      const response = await fetch(
+        "https://localhost:5001/api/classrooms/getAll",
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "http://localhost:3000", 
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch classrooms");
+      }
+
+      const data = await response.json();
+      const classrooms = data.map((classroom) => ({
+        id: classroom.classroomID,
+        name: classroom.classroomName,
+      }));
+
+      setClassrooms(classrooms);
+    } catch (error) {
+      console.error("Error fetching classrooms:", error);
+    }
+  };
+  const fetchStudents = async () => {
+    try {
+      const response = await fetch(
+        "https://localhost:5001/api/students/getAll",
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "http://localhost:3000", 
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch students");
+      }
+
+      const data = await response.json();
+      const students = data.map((student) => ({
+        ID: student.studentID,
+        firstName: student.firstName,
+        lastName: student.lastName,
+        contactPerson: student.contactPerson,
+        contactNo: student.contactNo,
+        email: student.email,
+        classroom: student.classroomName,
+        dob: student.dob,
+        age: student.age,
+      }));
+
+      setStudents(students);
+    } catch (error) {
+      console.error("Error fetching students:", error);
+    }
+  };
+
   return (
     <div>
       <FormSection
         title="Student Details"
         fields={studentFields}
-        classrooms={classrooms}
+        classrooms={gclassrooms}
         createLink={"abc"}
       />
-      <ListSection title="Existing Student" data={data} />
+      {students.length > 0 && (
+        <ListSection title="Existing Student" data={students} />
+      )}
     </div>
   );
 };

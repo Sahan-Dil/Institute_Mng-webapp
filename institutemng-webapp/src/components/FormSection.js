@@ -34,7 +34,6 @@ const calculateAge = (dob) => {
 
 const FormSection = ({ title, fields, classrooms,createLink }) => {
   const [isOpen, setIsOpen] = useState(true);
-
   const handleToggleAccordion = () => {
     setIsOpen((prevOpen) => !prevOpen);
   };
