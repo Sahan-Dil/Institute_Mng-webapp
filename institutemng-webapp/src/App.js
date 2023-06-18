@@ -7,6 +7,9 @@ import Teachers from './pages/Teachers';
 import Subjects from './pages/Subjects';
 import BreadCrumb from './components/BreadCrumb';
 import Header from './components/Header';
+import AllocateSubjectPage from './pages/AllocateSubjectPage';
+import AllocateClassesPage from './pages/AllocateClassesPage';
+import StudentReportPage from './pages/StudentReportPage';
 
 const App = () => {
   return (
@@ -20,6 +23,9 @@ const App = () => {
           <Route path="/classes" component={Classes} />
           <Route path="/teachers" component={Teachers} />
           <Route path="/subjects" component={Subjects} />
+          <Route path="/allocate-subject" component={AllocateSubjectPage} />
+        <Route path="/allocate-classes" component={AllocateClassesPage} />
+        <Route path="/student-report" component={StudentReportPage} />
         </Switch>
       </div>
     </Router>

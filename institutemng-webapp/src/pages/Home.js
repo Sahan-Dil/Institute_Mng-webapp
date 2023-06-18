@@ -39,6 +39,25 @@ const HomePage = () => {
           </Grid>
         </Grid>
       </Grid>
+      <Grid item>
+        <Grid container spacing={2} justifyContent="center">
+          <Grid item>
+            <Button component={Link} to="/allocate-subject" variant="outlined" color="primary">
+              Allocate Subject
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button component={Link} to="/allocate-classes" variant="outlined" color="primary">
+              Allocate Classes
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button component={Link} to="/student-report" variant="outlined" color="primary">
+              Student Report
+            </Button>
+          </Grid>
+        </Grid>
+      </Grid>
     </Grid>
   );
 };
