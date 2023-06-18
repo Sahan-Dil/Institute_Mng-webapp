@@ -1,17 +1,29 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import BreadCrumb from '../components/BreadCrumb';
+import FormSection from '../components/FormSection';
 
-const StudentsPage = () => {
-  const path = ['Home', 'Students'];
+const StudentPage = () => {
+  const studentFields = [
+    { name: 'firstName', label: 'First Name', type: 'text', required: true },
+    { name: 'lastName', label: 'Last Name', type: 'text', required: true },
+    { name: 'contactPerson', label: 'Contact Person', type: 'text', required: true },
+    { name: 'contactNo', label: 'Contact No', type: 'tel', required: true },
+    { name: 'email', label: 'Email Address', type: 'email', required: true },
+    { name: 'classroom', label: 'Classroom', type: 'select', required: true },
+    // Add more fields as needed
+  ];
+
+  const classrooms = [
+    { id: 1, name: 'Classroom 1' },
+    { id: 2, name: 'Classroom 2' },
+    { id: 3, name: 'Classroom 3' },
+    // Add more classrooms as needed
+  ];
 
   return (
     <div>
-      <h1>Students Page</h1>
-      <p>This is the Students page content.</p>
-      <Link to="/">Go back to Home</Link>
+      <FormSection title="Student Details" fields={studentFields} classrooms={classrooms} />
     </div>
   );
 };
 
-export default StudentsPage;
+export default StudentPage;

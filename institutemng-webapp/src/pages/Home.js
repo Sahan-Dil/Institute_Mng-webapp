@@ -23,6 +23,11 @@ const HomePage = () => {
             </Button>
           </Grid>
           <Grid item>
+            <Button component={Link} to="/classes" variant="contained" color="primary">
+              Classes
+            </Button>
+          </Grid>
+          <Grid item>
             <Button component={Link} to="/teachers" variant="contained" color="primary">
               Teachers
             </Button>
