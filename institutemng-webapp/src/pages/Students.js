@@ -28,7 +28,7 @@ const StudentPage = () => {
       required: true,
       disabled: true,
     },
-    // Add more fields as needed
+    
   ];
   const [gclassrooms, setClassrooms] = useState([]);
   const [students, setStudents] = useState([]);
@@ -82,16 +82,18 @@ const StudentPage = () => {
       }
 
       const data = await response.json();
+      console.log("dataaaaa",data);
       const students = data.map((student) => ({
         ID: student.studentID,
         firstName: student.firstName,
         lastName: student.lastName,
         contactPerson: student.contactPerson,
         contactNo: student.contactNo,
-        email: student.email,
+        email: student.emailAddress,
         classroom: student.classroomName,
-        dob: student.dob,
+        dob: student.dateOfBirth,
         age: student.age,
+        classroom:student.classroom,
       }));
 
       setStudents(students);
@@ -106,7 +108,7 @@ const StudentPage = () => {
         title="Student Details"
         fields={studentFields}
         classrooms={gclassrooms}
-        createLink={"abc"}
+        createLink={"https://localhost:5001/api/students/create"}
       />
       {students.length > 0 && (
         <ListSection title="Existing Student" data={students} />

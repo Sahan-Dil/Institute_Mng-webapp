@@ -8,11 +8,12 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-import axios from 'axios';
+import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronUp, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useLocation } from "react-router-dom";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -32,11 +33,12 @@ const calculateAge = (dob) => {
   return age.toString();
 };
 
-const FormSection = ({ title, fields, classrooms,createLink }) => {
+const FormSection = ({ title, fields, classrooms, createLink }) => {
   const [isOpen, setIsOpen] = useState(true);
   const handleToggleAccordion = () => {
     setIsOpen((prevOpen) => !prevOpen);
   };
+  const location = useLocation();
 
   const formik = useFormik({
     initialValues: {
@@ -61,29 +63,78 @@ const FormSection = ({ title, fields, classrooms,createLink }) => {
   };
 
   const handleSave = () => {
+    let payload;
+
+    if (formik.values.classroomName) {
+      console.log("ffff", JSON.stringify(formik.values));
+      payload = {
+        classroomName: formik.values.classroomName,
+      };
+    }
+    if (formik.values.subjectName) {
+      console.log("ffff", JSON.stringify(formik.values));
+      payload = {
+        subjectName: formik.values.subjectName,
+      };
+    }
+
     if (formik.isValid) {
-      console.log(formik.values);
-      console.log(createLink)
+      console.log("ffff", JSON.stringify(formik.values));
+
+      if (formik.values.firstName) {
+        payload = {
+          FirstName: formik.values.firstName,
+          LastName: formik.values.lastName,
+          ContactPerson: formik.values.contactPerson,
+          ContactNo: formik.values.contactNo,
+          EmailAddress: formik.values.email,
+          DateOfBirth: formik.values.dob,
+          Age: parseInt(formik.values.age, 10),
+          classroom: formik.values.classroom,
+        };
+        console.log("ffff", JSON.stringify(payload));
+      }
 
       //api call for create
-      axios
-      .post(createLink, formik.values)
-      .then(response => {
-        window.alert('Record created successfully',response);
+    }
+    axios
+      .post(createLink, JSON.stringify(payload), {
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "http://localhost:3000",
+        },
+      })
+
+      .then((response) => {
+        window.alert("Record created successfully", response);
         formik.resetForm();
       })
-      .catch(error => {
-        window.alert('Error creating record:', error);
+      .catch((error) => {
+        window.alert("Error creating record:", error);
       });
-
-      
-    }
   };
 
   const handleDelete = () => {
     if (formik.isValid) {
-      console.log(formik.values);
-      formik.resetForm();
+      const email = formik.values.email;
+      let url;
+      if (location.pathname.includes("/students")) {
+        url = `https://localhost:5001/api/students/delete/${email}`;
+      } else if (location.pathname.includes("/teachers")) {
+        url = `https://localhost:5001/api/teachers/delete/${email}`;
+      }
+
+      axios
+        .delete(url)
+        .then((response) => {
+          console.log("Record deleted successfully");
+          window.alert("Record deleted successfully");
+          formik.resetForm();
+        })
+        .catch((error) => {
+          console.log("Error occurred while deleting the record");
+          window.alert("Error occurred while deleting the record");
+        });
     }
   };
 
@@ -147,7 +198,7 @@ const FormSection = ({ title, fields, classrooms,createLink }) => {
                           onBlur={formik.handleBlur}
                         >
                           {classrooms.map((classroom) => (
-                            <MenuItem key={classroom.id} value={classroom.id}>
+                            <MenuItem key={classroom.id} value={classroom.name}>
                               {classroom.name}
                             </MenuItem>
                           ))}

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Box, FormControl, Select, MenuItem, Button, Table, TableHead, TableRow, TableCell, TableBody, Typography } from '@mui/material';
 import SelectTeacher from '../components/SelectTeacher';
+import axios from "axios";
+
 
 const AllocateClassesPage = () => {
   const [selectedTeacher, setSelectedTeacher] = useState();
@@ -23,7 +25,7 @@ const AllocateClassesPage = () => {
   const fetchClassrooms = async () => {
     try {
       // Make an API call to fetch classroom data
-      const response = await fetch('<CLASSROOM_API_ENDPOINT_URL>');
+      const response = await fetch('https://localhost:5001/api/classrooms/getAll');
       const data = await response.json();
       return data;
     } catch (error) {
@@ -35,7 +37,7 @@ const AllocateClassesPage = () => {
   const fetchAllocatedClasses = async () => {
     try {
       // Make an API call to fetch allocated classes data
-      const response = await fetch('<ALLOCATED_CLASSES_API_ENDPOINT_URL>');
+      const response = await fetch('https://localhost:5001/api/allocatedClasses/getAll');
       const data = await response.json();
       return data;
     } catch (error) {
@@ -44,34 +46,63 @@ const AllocateClassesPage = () => {
     }
   };
 
-  const handleAllocate = async () => {
+  const handleDeallocate = async (id) => {
     try {
-      // Make an API call to allocate the class with selectedTeacher and selectedClassroom
-      const response = await fetch('<ALLOCATE_CLASS_API_ENDPOINT_URL>', {
-        method: 'POST',
+      const response = await axios.delete(`https://localhost:5001/api/allocatedClasses/delete/${id}`, {
         headers: {
           'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': 'http://localhost:3000',
         },
-        body: JSON.stringify({
-          teacher: selectedTeacher,
-          classroom: selectedClassroom,
-        }),
       });
-
-      if (response.ok) {
-        // Successfully allocated the class, update the allocated classes data
+  
+      if (response.status === 200) {
+        console.log('Allocated class deleted successfully');
+        
         fetchAllocatedClasses().then((data) => {
           setAllocatedClasses(data);
         });
-
-        console.log('Class allocated successfully');
       } else {
-        console.error('Failed to allocate class');
+        console.error('Failed to delete allocated class');
       }
     } catch (error) {
-      console.error('Error allocating class:', error);
+      console.error('Error deleting allocated class:', error);
     }
   };
+  
+
+const handleAllocate = async () => {
+  try {
+    const payload = {
+      teacher: selectedTeacher,
+      class: selectedClassroom,
+    };
+
+    const response = await axios.post(
+      "https://localhost:5001/api/allocatedClasses/create",
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "http://localhost:3000",
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      // Successfully allocated the class, update the allocated classes data
+      fetchAllocatedClasses().then((data) => {
+        setAllocatedClasses(data);
+      });
+
+      console.log("Class allocated successfully");
+    } else {
+      console.error("Failed to allocate class");
+    }
+  } catch (error) {
+    console.error("Error allocating class:", error);
+  }
+};
+
 
   return (
     <Grid container spacing={2} sx={{ marginTop: '20px', marginLeft: 'auto', marginRight: 'auto', maxWidth: '90%' }}>
@@ -115,10 +146,10 @@ const AllocateClassesPage = () => {
                   size="small"
                   sx={{ minWidth: '120px' }}
                 >
-                  <MenuItem value="">Select classroom</MenuItem>
+                  <MenuItem disabled value="">Select classroom</MenuItem>
                   {classroomOptions.map((classroom) => (
-                    <MenuItem key={classroom.id} value={classroom.id}>
-                      {classroom.name}
+                    <MenuItem key={classroom?.classroomID} value={classroom?.classroomName}>
+                      {classroom?.classroomName}
                     </MenuItem>
                   ))}
                 </Select>
@@ -138,17 +169,20 @@ const AllocateClassesPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {allocatedClasses.map((classroom) => (
-                <TableRow key={classroom.id}>
-                  <TableCell>{classroom.name}</TableCell>
-                  <TableCell>
-                    <Button variant="outlined" color="inherit">
-                      Deallocate
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+  {allocatedClasses
+    .filter((classroom) => selectedTeacher === classroom.teacher)
+    .map((classroom) => (
+      <TableRow key={classroom.id}>
+        <TableCell>{classroom.class}</TableCell>
+        <TableCell>
+          <Button variant="outlined" color="inherit" onClick={() => handleDeallocate(classroom.id)}>
+            Deallocate
+          </Button>
+        </TableCell>
+      </TableRow>
+    ))}
+</TableBody>
+
           </Table>
         </Box>
       </Grid>

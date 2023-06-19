@@ -14,7 +14,7 @@ const SelectTeacher = ({ selectedTeacher, setSelectedTeacher }) => {
   const fetchTeachers = async () => {
     try {
       // Make an API call to fetch teacher data
-      const response = await fetch('<API_ENDPOINT_URL>');
+      const response = await fetch('https://localhost:5001/api/teachers/getAll');
       const data = await response.json();
       return data;
     } catch (error) {
@@ -58,10 +58,10 @@ const SelectTeacher = ({ selectedTeacher, setSelectedTeacher }) => {
         <Grid item xs={10}>
           <FormControl sx={{ width: '50%' }}>
             <Select value={selectedTeacher} onChange={handleChange} displayEmpty size="small" sx={{ minWidth: '120px' }}>
-              <MenuItem value="">Select teacher</MenuItem>
+              <MenuItem disabled value="">Select teacher</MenuItem>
               {teacherOptions.map((teacher) => (
-                <MenuItem key={teacher.id} value={teacher.id}>
-                  {teacher.name}
+                <MenuItem key={teacher.teacherId} value={`${teacher.firstName} ${teacher.lastName}`}>
+                  {`${teacher.firstName} ${teacher.lastName}`}
                 </MenuItem>
               ))}
             </Select>
